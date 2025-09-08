@@ -33,28 +33,17 @@ This project sets up a repeatable, cost-efficient target farm on a VM to simulat
    ```
    - Checks Docker status, target count, endpoint responses.
 
-4. **Benchmark with scanner:**
-   ```
-   scanner -l targets.txt -t /path/to/templates -c 400 -rl 2500 -timeout 3 -retries 1 -jsonl -o results.jsonl
-   ```
-
-5. **Analyze results:**
-   ```
-   ./scripts/bucketize_results.sh results.jsonl
-   ```
-   - Shows findings per bucket and HTTP code distribution from logs.
 
 ## Behaviors and Buckets
 
-- **ok (400):** Fast 200 JSON responses.
-- **redirect (100):** 3-hop redirects (302).
-- **rl (100):** Rate-limited (2r/s, burst 5; expect 429s).
-- **delay1s (150):** 1s server delay.
-- **big (100):** 1MB response body.
-- **err (50):** 500 errors.
-- **waf (100):** WAF-like blocks (403 on SQLi/XSS patterns).
+- **ok:** Fast 200 JSON responses.
+- **redirect:** 3-hop redirects (302).
+- **rl:** Rate-limited (2r/s, burst 5; expect 429s).
+- **delay1s:** 1s server delay.
+- **big:** 1MB response body.
+- **err:** 500 errors.
+- **waf:** WAF-like blocks (403 on SQLi/XSS patterns).
 
-Total: 1000 targets. 
 
 ## Extending for Vulnerable Targets
 
@@ -79,18 +68,6 @@ To add a vuln bucket for testing vulnerability detection (no initial integration
 4. **Start extended:** `docker compose -f compose/docker-compose.yml -f compose-vuln.yml up -d`.
 
 5. **Examples:** Add OWASP Juice Shop (`bkimminich/juice-shop`), Metasploitable2, or WebGoat. Adjust counts and routing as needed. This avoids bloating base setup.
-
-## Workflow Diagram
-
-```mermaid
-graph TD
-    A[VM Setup] --> B[System Tune]
-    B --> C[Docker Up]
-    C --> D[Target Gen]
-    D --> E[Scanner Run]
-    E --> F[Analyze]
-```
-
 
 
 
