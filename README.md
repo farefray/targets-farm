@@ -105,5 +105,5 @@ graph TD
 - **Logs:** `docker logs tf-proxy`, `docker logs tf-httpbin`.
 - **Scale:** For tight resources, split to second VM (see plan.md #12).
 
-See `plan.md` for full runbook, optional packs (Cloudflare WAF, Toxiproxy), and monitoring tips.
+
 
