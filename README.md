@@ -1,6 +1,6 @@
-# Targets Farm for Nuclei Vulnerability Scanner Benchmarking
+# Targets Farm for Vulnerability Scanner Benchmarking
 
-This project sets up a repeatable, cost-efficient target farm on a VM to simulate real-world targets for benchmarking and testing Nuclei scans. It generates 1000 FQDNs using sslip.io, routed via NGINX to different behavior buckets (ok, redirect, rl, delay1s, big, err, waf) for performance testing under load.
+This project sets up a repeatable, cost-efficient target farm on a VM to simulate real-world targets for benchmarking and testing scans. It generates 1000 FQDNs using sslip.io, routed via NGINX to different behavior buckets (ok, redirect, rl, delay1s, big, err, waf) for performance testing under load.
 
 ## VM Provisioning
 
@@ -33,9 +33,9 @@ This project sets up a repeatable, cost-efficient target farm on a VM to simulat
    ```
    - Checks Docker status, target count, endpoint responses.
 
-4. **Benchmark with Nuclei:**
+4. **Benchmark with scanner:**
    ```
-   nuclei -l targets.txt -t /path/to/templates -c 400 -rl 2500 -timeout 3 -retries 1 -jsonl -o results.jsonl
+   scanner -l targets.txt -t /path/to/templates -c 400 -rl 2500 -timeout 3 -retries 1 -jsonl -o results.jsonl
    ```
 
 5. **Analyze results:**
@@ -54,17 +54,11 @@ This project sets up a repeatable, cost-efficient target farm on a VM to simulat
 - **err (50):** 500 errors.
 - **waf (100):** WAF-like blocks (403 on SQLi/XSS patterns).
 
-Total: 1000 targets. See `plan.md` for details and NGINX routing.
-
-## Performance Benchmarks
-
-- **Target:** 2-3k sustained RPS, P95 latency <1s for ok bucket using full Nuclei community templates.
-- **Monitor:** Error rates <1%, tune `-c`/`-rl`/`-timeout`. Use `docker stats` and NGINX logs for CPU/conns.
-- **Watch:** P95 rises on delay/rl buckets; keep heavy buckets ≤30% total.
+Total: 1000 targets. 
 
 ## Extending for Vulnerable Targets
 
-To add a vuln bucket for testing Nuclei vulnerability detection (no initial integration; modular for later):
+To add a vuln bucket for testing vulnerability detection (no initial integration; modular for later):
 
 1. **Create override:** `compose-vuln.yml` example for DVWA:
    ```
@@ -93,17 +87,10 @@ graph TD
     A[VM Setup] --> B[System Tune]
     B --> C[Docker Up]
     C --> D[Target Gen]
-    D --> E[Nuclei Run]
+    D --> E[Scanner Run]
     E --> F[Analyze]
 ```
 
-## Troubleshooting
-
-- **No resolution:** Check sslip.io with dig `ok-001.<IP>.sslip.io`.
-- **Docker issues:** Run `sudo systemctl status docker`.
-- **High latency:** Monitor with `ss -s`, adjust sysctl.
-- **Logs:** `docker logs tf-proxy`, `docker logs tf-httpbin`.
-- **Scale:** For tight resources, split to second VM (see plan.md #12).
 
 
 
