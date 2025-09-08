@@ -1,0 +1,27 @@
+version: "3.9"
+
+services:
+  proxy:
+    image: nginx:1.27
+    container_name: tf-proxy
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ../nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ../nginx/conf.d:/etc/nginx/conf.d:ro
+      - proxy_logs:/var/log/nginx
+    depends_on:
+      - httpbin
+
+  httpbin:
+    image: mccutchen/go-httpbin:latest
+    container_name: tf-httpbin
+    restart: unless-stopped
+    environment:
+      - GHB_BIND_ADDRESS=0.0.0.0:8080
+    expose:
+      - "8080"
+
+volumes:
+  proxy_logs: {}
