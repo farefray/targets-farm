@@ -19,7 +19,8 @@ except:
     print(f"Error: '{ip}' is not a valid IPv4 address", file=sys.stderr)
     sys.exit(1)
 
-domain = f"{ip}.sslip.io"
+# Use hyphenated IP form to avoid sslip.io matching an earlier dotted IPv4 in the hostname
+domain = f"{ip.replace('.', '-')}.sslip.io"
 
 # Bucket allocations – tuned to exactly 1000
 plan = {

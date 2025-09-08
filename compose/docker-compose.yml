@@ -5,7 +5,7 @@ services:
     command: >
       /bin/sh -lc "
         apk add --no-cache openssl &&
-        CERT_DIR=/certs DOMAIN=*.185.53.209.170.sslip.io sh /init.sh
+        CERT_DIR=/certs DOMAIN=*.185-53-209-170.sslip.io sh /init.sh
       "
     volumes:
       - certs:/certs
