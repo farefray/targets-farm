@@ -1,4 +1,17 @@
 services:
+  certgen:
+    image: alpine:3.20
+    container_name: tf-certgen
+    command: >
+      /bin/sh -lc "
+        apk add --no-cache openssl &&
+        CERT_DIR=/certs DOMAIN=*.185.53.209.170.sslip.io sh /init.sh
+      "
+    volumes:
+      - certs:/certs
+      - ../nginx/certs/init-cert.sh:/init.sh:ro
+    restart: "no"
+
   proxy:
     image: nginx:1.27
     container_name: tf-proxy
@@ -13,7 +26,10 @@ services:
       - ../nginx/certs/init-cert.sh:/docker-init-cert.sh:ro
       - proxy_logs:/var/log/nginx
     depends_on:
-      - httpbin
+      certgen:
+        condition: service_completed_successfully
+      httpbin:
+        condition: service_started
 
   httpbin:
     image: mccutchen/go-httpbin:latest
@@ -26,3 +42,4 @@ services:
 
 volumes:
   proxy_logs: {}
+  certs: {}
